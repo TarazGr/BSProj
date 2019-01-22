@@ -63,21 +63,21 @@ def model(img):
         layer = tf.layers.max_pooling2d(layer, pool_size=2, strides=2, padding='same')
 
     with tf.variable_scope('convolutional_layer_2'):
-        layer = tf.layers.conv2d(inputs=img, filters=64, kernel_size=[3, 3], padding='same', activation=tf.nn.relu,
+        layer = tf.layers.conv2d(inputs=layer, filters=64, kernel_size=[3, 3], padding='same', activation=tf.nn.relu,
                                  kernel_initializer=tf.truncated_normal_initializer(mean=0.0, stddev=0.01),
                                  bias_initializer=tf.truncated_normal_initializer(mean=0.5, stddev=0.01),
                                  kernel_regularizer=tf.contrib.layers.l2_regularizer(0.0002))
         layer = tf.layers.max_pooling2d(layer, pool_size=2, strides=2, padding='same')
 
     with tf.variable_scope('convolutional_layer_3'):
-        layer = tf.layers.conv2d(inputs=img, filters=32, kernel_size=[3, 3], padding='same', activation=tf.nn.relu,
+        layer = tf.layers.conv2d(inputs=layer, filters=32, kernel_size=[3, 3], padding='same', activation=tf.nn.relu,
                                  kernel_initializer=tf.truncated_normal_initializer(mean=0.0, stddev=0.01),
                                  bias_initializer=tf.truncated_normal_initializer(mean=0.5, stddev=0.01),
                                  kernel_regularizer=tf.contrib.layers.l2_regularizer(0.0002))
         layer = tf.layers.max_pooling2d(layer, pool_size=2, strides=2, padding='same')
 
     with tf.variable_scope('convolutional_layer_4'):
-        layer = tf.layers.conv2d(inputs=img, filters=16, kernel_size=[3, 3], padding='same', activation=tf.nn.relu,
+        layer = tf.layers.conv2d(inputs=layer, filters=16, kernel_size=[3, 3], padding='same', activation=tf.nn.relu,
                                  kernel_initializer=tf.truncated_normal_initializer(mean=0.0, stddev=0.01),
                                  bias_initializer=tf.truncated_normal_initializer(mean=0.5, stddev=0.01),
                                  kernel_regularizer=tf.contrib.layers.l2_regularizer(0.0002))
