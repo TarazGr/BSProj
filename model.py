@@ -8,7 +8,7 @@ import data_preprocessing as dp
 import pickle
 import evaluation as eval
 
-DATA_DIR = 'att_faces'
+DATA_DIR = 'cfp-dataset/Data/Images'
 TMP_DIR = 'tmp'
 
 BATCH_SIZE = 16
@@ -24,18 +24,19 @@ category2index = {}
 index = 0
 
 for folder in os.listdir(DATA_DIR):
+    if folder not in category2index:
+        category2index[folder] = index
+        index += 1
+    imgs = []
     directory = os.path.join(DATA_DIR, folder)
-    if os.path.isdir(directory):
+    for fold in os.listdir(directory):
+        directory_in = os.path.join(directory, fold)
         #print(folder)
-        if folder not in category2index:
-            category2index[folder] = index
-            index += 1
-        d = []
-        for img in os.listdir(directory):
-            img = Image.open(os.path.join(directory, img)).convert('L')
+        for img in os.listdir(directory_in):
+            img = Image.open(os.path.join(directory_in, img)).convert('L').resize((100, 100))
             img = np.asarray(img)
-            d.append(img.reshape(img.shape[0], img.shape[1], 1))
-        dataset.append(d)
+            imgs.append(img.reshape(img.shape[0], img.shape[1], 1))
+        dataset.append(imgs)
 
 if not os.path.exists(TMP_DIR + '/train_set.pkl') or not os.path.exists(TMP_DIR + '/test_set.pkl'):
     train_set, test_set = dp.split_dataset(dataset, category2index, train_size=0.8)
