@@ -62,7 +62,7 @@ def get_batch(train_set, batch_size):
 
 def get_one_shot_test(test_set):
     n_classes = len(test_set)
-    cat = np.random.choice(list(range(len(test_set))), size=n_classes, replace=False)
+    cat = np.random.choice(list(range(n_classes)), size=n_classes, replace=False)
     random_indexes = np.random.randint(0, len(test_set[0]), size=n_classes)
     true_cat = cat[0]
     ex1, ex2 = np.random.choice(len(test_set[0]), replace=False, size=2)
