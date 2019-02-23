@@ -18,6 +18,7 @@ def global_iteraction(file_path, update=None):
         f.write(str(update))
         f.close()
 
+
 def split_dataset(dataset, categories, train_size=0.75):
     train_set = []
     test_set = []
@@ -36,6 +37,7 @@ def split_dataset(dataset, categories, train_size=0.75):
             l.append(sample)
         test_set.append(l)
     return train_set, test_set
+
 
 def get_batch(train_set, batch_size):
     cat = np.random.choice(list(range(len(train_set))), size=batch_size, replace=False)
@@ -60,6 +62,7 @@ def get_batch(train_set, batch_size):
         batch.append((img_1, img_2))
     return batch, label
 
+
 def get_one_shot_test(test_set):
     n_classes = len(test_set)
     cat = np.random.choice(list(range(n_classes)), size=n_classes, replace=False)
@@ -79,5 +82,3 @@ def get_one_shot_test(test_set):
         k += 1
     label[0] = 1
     return test, label
-
-
