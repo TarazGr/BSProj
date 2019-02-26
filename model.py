@@ -6,7 +6,9 @@ import tqdm
 import tensorflow as tf
 import data_preprocessing as dp
 import pickle
-import evaluation as eval
+import evaluation as evaluation
+
+from keras.layers import Conv2D, MaxPool2D, Input, Flatten, Dense
 
 DATA_DIR = 'cfp-dataset/Data/Images'
 TMP_DIR = 'tmp'
@@ -37,10 +39,8 @@ for folder in os.listdir(DATA_DIR):
         imgs.append(img.reshape(img.shape[0], img.shape[1], 1))
     dataset.append(imgs)
 
-if not os.path.exists(TMP_DIR + '/train_set.pkl') or not os.path.exists(
-        TMP_DIR + '/test_set.pkl'):
-    train_set, test_set = dp.split_dataset(dataset, category2index,
-                                           train_size=0.9)
+if not os.path.exists(TMP_DIR + '/train_set.pkl') or not os.path.exists(TMP_DIR + '/test_set.pkl'):
+    train_set, test_set = dp.split_dataset(dataset, category2index, train_size=0.9)
     pickle.dump(train_set, open(TMP_DIR + '/train_set.pkl', 'wb'))
     pickle.dump(test_set, open(TMP_DIR + '/test_set.pkl', 'wb'))
 else:
@@ -56,9 +56,9 @@ shape = train_set[0][0].shape
 
 # MODEL #
 
-def model(img, reuse=False):
+def model(image, reuse=False):
     with tf.variable_scope('convolutional_layer_1'):
-        layer = tf.layers.conv2d(inputs=img, filters=64, kernel_size=[3, 3], padding='same', activation=tf.nn.relu,
+        layer = tf.layers.conv2d(inputs=image, filters=64, kernel_size=[3, 3], padding='same', activation=tf.nn.relu,
                                  kernel_initializer=tf.truncated_normal_initializer(mean=0.0, stddev=0.01),
                                  bias_initializer=tf.truncated_normal_initializer(mean=0.5, stddev=0.01),
                                  kernel_regularizer=tf.contrib.layers.l2_regularizer(0.0002), reuse=reuse)
@@ -93,6 +93,42 @@ def model(img, reuse=False):
                                 kernel_initializer=tf.truncated_normal_initializer(mean=0.0, stddev=0.01),
                                 bias_initializer=tf.truncated_normal_initializer(mean=0.5, stddev=0.01),
                                 kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3), reuse=reuse)
+    return layer
+
+
+def train_model(image):
+    inp = Input(shape=(100, 100, 1))
+    with tf.variable_scope('convolutional_layer_1'):
+        layer = Conv2D(64, (3, 3), padding="same", activation="relu",
+                       kernel_initializer=tf.truncated_normal_initializer(mean=0.0, stddev=0.01),
+                       bias_initializer=tf.truncated_normal_initializer(mean=0.5, stddev=0.01),
+                       kernel_regularizer=tf.contrib.layers.l2_regularizer(0.0002))(inp)
+        layer = MaxPool2D((2, 2), strides=2, padding="same")(layer)
+    with tf.variable_scope('convolutional_layer_2'):
+        layer = Conv2D(32, (3, 3), padding="same", activation="relu",
+                       kernel_initializer=tf.truncated_normal_initializer(mean=0.0, stddev=0.01),
+                       bias_initializer=tf.truncated_normal_initializer(mean=0.5, stddev=0.01),
+                       kernel_regularizer=tf.contrib.layers.l2_regularizer(0.0002))(layer)
+        layer = MaxPool2D((2, 2), strides=2, padding="same")(layer)
+    with tf.variable_scope('convolutional_layer_3'):
+        layer = Conv2D(16, (3, 3), padding="same", activation="relu",
+                       kernel_initializer=tf.truncated_normal_initializer(mean=0.0, stddev=0.01),
+                       bias_initializer=tf.truncated_normal_initializer(mean=0.5, stddev=0.01),
+                       kernel_regularizer=tf.contrib.layers.l2_regularizer(0.0002))(layer)
+        layer = MaxPool2D((2, 2), strides=2, padding="same")(layer)
+    with tf.variable_scope('convolutional_layer_4'):
+        layer = Conv2D(8, (3, 3), padding="same", activation="relu",
+                       kernel_initializer=tf.truncated_normal_initializer(mean=0.0, stddev=0.01),
+                       bias_initializer=tf.truncated_normal_initializer(mean=0.5, stddev=0.01),
+                       kernel_regularizer=tf.contrib.layers.l2_regularizer(0.0002))(layer)
+        layer = MaxPool2D((2, 2), strides=2, padding="same")(layer)
+    with tf.variable_scope('flatten_layer'):
+        layer = Flatten()(layer)
+    with tf.variable_scope('dense_layer_1'):
+        layer = Dense(1024, activation="sigmoid",
+                      kernel_initializer=tf.truncated_normal_initializer(mean=0.0, stddev=0.01),
+                      bias_initializer=tf.truncated_normal_initializer(mean=0.5, stddev=0.01),
+                      kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))(layer)
     return layer
 
 
@@ -147,10 +183,10 @@ with tf.Session(graph=graph) as session:
         # Define metadata variable.
         run_metadata = tf.RunMetadata()
 
-        _, l = session.run([train_op, loss], feed_dict={img_1: pair_1, img_2: pair_2, flags: label},
-                           run_metadata=run_metadata)
+        _, loss = session.run([train_op, loss], feed_dict={img_1: pair_1, img_2: pair_2, flags: label},
+                              run_metadata=run_metadata)
 
-        average_loss += l
+        average_loss += loss
 
         # print loss every 500 steps
         if (step % 10000 == 0 and step > 0) or (step == (ITERACTIONS - 1)):
