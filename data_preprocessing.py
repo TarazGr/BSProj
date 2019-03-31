@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def global_iteraction(file_path, update=None):
     if not update:
         try:
@@ -65,10 +64,11 @@ def get_batch(train_set, batch_size):
 
 def get_one_shot_test(test_set):
     n_classes = len(test_set)
+    n_examples = len(test_set[0])
     cat = np.random.choice(list(range(n_classes)), size=n_classes, replace=False)
-    random_indexes = np.random.randint(0, len(test_set[0]), size=n_classes)
+    random_indexes = np.random.randint(0, n_examples, size=n_examples)
     true_cat = cat[0]
-    ex1, ex2 = np.random.choice(len(test_set[0]), replace=False, size=2)
+    ex1, ex2 = np.random.choice(n_examples, replace=False, size=2)
     test = []
     label = np.zeros(n_classes)
     img_1 = test_set[true_cat][ex1]
