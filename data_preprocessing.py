@@ -38,6 +38,16 @@ def split_dataset(dataset, categories, train_size=0.75):
     return train_set, test_set
 
 
+def closed_set_split(dataset, categories, train_size=0.75):
+    train_set = []
+    test_set = []
+    for category in categories.values():
+        train_max = round(len(dataset[category]) * train_size)
+        for index, sample in enumerate(dataset[category]):
+            train_set.append(sample) if index <= train_max else test_set.append(sample)
+    return train_set, test_set
+
+
 def get_batch(train_set, batch_size):
     cat = np.random.choice(list(range(len(train_set))), size=batch_size, replace=False)
     #print(cat)
