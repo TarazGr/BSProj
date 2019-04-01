@@ -45,8 +45,9 @@ def closed_set_split(dataset, categories, train_size=0.75):
         train_max = np.floor(len(dataset[category]) * train_size)
         train_l = []
         test_l = []
+        indexes = np.random.choice(range(len(dataset[category])), size=int(train_max), replace=False)
         for index, sample in enumerate(dataset[category]):
-            train_l.append(sample) if index <= train_max else test_l.append(sample)
+            train_l.append(sample) if index in indexes else test_l.append(sample)
         train_set.append(train_l)
         test_set.append(test_l)
     return train_set, test_set
