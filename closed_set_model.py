@@ -16,7 +16,7 @@ ITERACTIONS = 3000
 if not os.path.exists(TMP_DIR):
     os.makedirs(TMP_DIR)
 
-GLOBAL_ITER = dp.global_iteraction(TMP_DIR + '/iteraction.txt')
+GLOBAL_ITER = dp.global_iteraction(TMP_DIR + '/closed_iteraction.txt')
 
 print('Global iteraction:', GLOBAL_ITER)
 
