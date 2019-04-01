@@ -45,8 +45,8 @@ if not os.path.exists(TMP_DIR + '/closed_train_set.pkl') or not os.path.exists(T
     pickle.dump(closed_test_set, open(TMP_DIR + '/closed_test_set.pkl', 'wb'))
 else:
     print('Reloading train set and test set...')
-    closed_train_set = pickle.load(open(TMP_DIR + '/train_set.pkl', 'rb'))
-    closed_test_set = pickle.load(open(TMP_DIR + '/test_set.pkl', 'rb'))
+    closed_train_set = pickle.load(open(TMP_DIR + '/closed_train_set.pkl', 'rb'))
+    closed_test_set = pickle.load(open(TMP_DIR + '/closed_test_set.pkl', 'rb'))
 
 
 shape = closed_train_set[0][0].shape
@@ -149,9 +149,9 @@ with tf.Session(graph=graph) as session:
         # print loss and accuracy on test set every 500 steps
         if (step % 500 == 0 and step > 0) or (step == (ITERACTIONS - 1)):
             correct = 0
-            k = len(test_set) * len(test_set[0])
+            k = len(closed_test_set) * len(closed_test_set[0])
             for _ in range(k):
-                test, label = dp.get_one_shot_test(test_set)
+                test, label = dp.get_one_shot_test(closed_test_set)
                 pair_1 = np.array([b[0] for b in test])
                 pair_2 = np.array([b[1] for b in test])
 
