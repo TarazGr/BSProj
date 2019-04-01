@@ -163,16 +163,16 @@ with tf.Session(graph=graph) as session:
 
             print('Loss:', str(average_loss / step), '\tAccuracy:', correct / k)
 
-            with open(TMP_DIR + '/log.txt', 'a', encoding='utf8') as f:
+            with open(TMP_DIR + '/closed_log.txt', 'a', encoding='utf8') as f:
                 f.write(str(correct / k) + ' ' + str(average_loss / step) + '\n')
 
         if step == (ITERACTIONS - 1):
             writer.add_run_metadata(run_metadata, 'step%d' % step, global_step=GLOBAL_ITER + step + 1)
 
     saver.save(session, os.path.join(TMP_DIR, 'closed_model.ckpt'))
-    dp.global_iteraction(TMP_DIR + '/iteraction.txt', update=GLOBAL_ITER + step + 1)
+    dp.global_iteraction(TMP_DIR + '/closed_iteraction.txt', update=GLOBAL_ITER + step + 1)
 
-pg.generate_accuracy_plot()
-pg.generate_loss_plot()
+pg.generate_accuracy_plot_for_closed()
+pg.generate_loss_plot_for_closed()
 
 writer.close()
