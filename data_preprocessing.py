@@ -54,7 +54,7 @@ def load_dataset(tmp_dir, data_dir):
             dataset.append(imgs)
         # print(len(dataset))
         # print(category2index)
-        train_set, test_set = split_dataset(dataset, category2index, train_size=0.75)
+        train_set, test_set = split_dataset(dataset, category2index, train_size=0.70)
         del dataset
         pickle.dump(train_set, open(tmp_dir + '/train_set.pkl', 'wb'))
         pickle.dump(test_set, open(tmp_dir + '/test_set.pkl', 'wb'))
@@ -66,24 +66,15 @@ def load_dataset(tmp_dir, data_dir):
     return train_set, test_set
 
 
-def split_dataset(dataset, categories, train_size=0.75):
+def split_dataset(dataset, categories, train_size=0.70):
     train_set = []
     test_set = []
-    train_categories = set(np.random.choice(list(categories.values()), size=round(len(categories) * train_size), replace=False))
-    #print(train_categories)
-    test_categories = set(categories.values()) - train_categories
-    #print(test_categories)
-    for category in train_categories:
-        l = []
-        for sample in dataset[category]:
-            l.append(sample)
-        train_set.append(l)
-    for category in test_categories:
-        l = []
-        for sample in dataset[category]:
-            l.append(sample)
-        test_set.append(l)
+    for ind, category in enumerate(dataset):
+        np.random.shuffle(category)
+        train_set.append(category[:round(len(category)*train_size)])
+        test_set.append(category[round(len(category)*train_size):])
     return train_set, test_set
+
 
 
 def get_batch(train_set, batch_size):
@@ -110,23 +101,22 @@ def get_batch(train_set, batch_size):
     return batch, label
 
 
-def get_one_shot_test(test_set):
+def get_one_shot_test(test_set, n_examples=10):
+    # Questa funzione ritorna una lista di 10 coppie, dove la prima è con la medesima persona, le altre sono persone diverse
     n_classes = len(test_set)
-    n_examples = len(test_set[0])
+    # n_examples = len(test_set[0])
     cat = np.random.choice(list(range(n_classes)), size=n_classes, replace=False)
-    random_indexes = np.random.randint(0, n_examples, size=n_examples)
+    random_indexes = np.random.randint(0, len(test_set[0]), size=n_examples)
     true_cat = cat[0]
-    ex1, ex2 = np.random.choice(n_examples, replace=False, size=2)
+    ex1, ex2 = np.random.choice(len(test_set[0]), replace=False, size=2)
     test = []
     label = np.zeros(n_classes)
     img_1 = test_set[true_cat][ex1]
-    k = 0
-    for random_index in random_indexes:
+    for k, random_index in enumerate(random_indexes):
         if k == 0:
             img_2 = test_set[cat[k]][ex2]
         else:
             img_2 = test_set[cat[k]][random_index]
         test.append((img_1, img_2))
-        k += 1
     label[0] = 1
     return test, label
