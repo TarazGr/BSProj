@@ -15,7 +15,6 @@ for i, img in enumerate(imgs):
 	scores = s.predict([img * (len(imgs))], imgs)
 	for j, score in enumerate(scores):
 		if i != j:
-			print("score:", score)
 			if score >= threshold:
 				print("There is a match between", i, "and", j)
 				matched = True
