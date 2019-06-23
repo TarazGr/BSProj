@@ -127,6 +127,10 @@ class SiameseNetwork:
         self.__writer.close()
 
     def predict(self, imgs1, imgs2):
-        run_metadata = tf.RunMetadata()
-        similarity_scores = self.__session.run(self.__scores, feed_dict={self.__img_1: imgs1, self.__img_2: imgs2}, run_metadata=run_metadata)
-        return similarity_scores
+        return self.__session.run(self.__scores, feed_dict={self.__img_1: imgs1, self.__img_2: imgs2}, run_metadata=tf.RunMetadata())
+
+    def get_embeddings(self, img):
+    	return self.__session.run(self.__embeddings_1, feed_dict={self.__img_1: img}, run_metadata=tf.RunMetadata())
+
+    def predict_with_embeddings(self, emb1, emb2):
+    	return self.__session.run(self.__scores, feed_dict={self.__embeddings_1: emb1, self.__embeddings_2: emb2}, run_metadata=tf.RunMetadata())
